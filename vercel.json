@@ -1,0 +1,9 @@
+{
+  "framework": "nextjs",
+  "regions": ["sfo1"],
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
