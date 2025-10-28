@@ -1,8 +1,0 @@
-{
-  "buildCommand": "cd kaironovas-website && npm run build",
-  "outputDirectory": "kaironovas-website/.next",
-  "installCommand": "cd kaironovas-website && npm install",
-  "devCommand": "cd kaironovas-website && npm run dev",
-  "framework": "nextjs",
-  "rootDirectory": "kaironovas-website"
-}
