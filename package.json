@@ -1,0 +1,17 @@
+{
+  "name": "kaironovas-root",
+  "version": "1.0.0",
+  "description": "Kaironovas AI-Powered Solutions Website",
+  "scripts": {
+    "build": "cd kaironovas-website && npm run build",
+    "dev": "cd kaironovas-website && npm run dev",
+    "start": "cd kaironovas-website && npm run start",
+    "install-deps": "cd kaironovas-website && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/go4pooja/Kaironovas.git"
+  },
+  "author": "Kaironovas Team",
+  "license": "MIT"
+}
