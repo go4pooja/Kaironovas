@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kaironovas-gic0608x3-pooja-mishras-projects-01370763.vercel.app/sitemap.xml
