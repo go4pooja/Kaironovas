@@ -2,7 +2,8 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Sparkles, Mail, Phone, MapPin, Twitter, Linkedin, Github } from 'lucide-react'
+import { Mail, Phone, MapPin, Twitter, Linkedin, Github } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 
 export function Footer() {
   const services = [
@@ -33,14 +34,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand section */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center space-x-2 mb-6">
-              <div className="relative">
-                <Sparkles className="h-8 w-8 text-indigo-400" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse"></div>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                Kaironovas
-              </span>
+            <Link href="/" className="mb-6 inline-block">
+              <Logo variant="white" size="md" showText={true} />
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Pioneering the future of intelligent digital solutions with cutting-edge AI technology.

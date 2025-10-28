@@ -3,13 +3,13 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://kaironovas.vercel.app',
+      url: 'https://kaironovas.com',
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 1,
     },
     {
-      url: 'https://kaironovas.vercel.app/test',
+      url: 'https://kaironovas.com/simple',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
