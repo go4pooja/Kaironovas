@@ -35,6 +35,13 @@ const TIMELINE_LABELS: Record<string, string> = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+
+    // Honeypot: legitimate users never see or fill this field. If it's populated,
+    // treat as spam and return a success-shaped response without persisting.
+    if (String(body.company_url ?? '').trim() !== '') {
+      return NextResponse.json({ success: true })
+    }
+
     const name = String(body.name ?? '').trim()
     const email = String(body.email ?? '').trim()
     const company = String(body.company ?? '').trim()
@@ -109,7 +116,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       id: data.id,
-      message: "Thank you! We'll review your request and get back to you within 24 hours.",
+      message: "Thanks. We've received your request and will get back to you shortly.",
     })
   } catch (error) {
     console.error('Contact form error:', error instanceof Error ? error.message : error)

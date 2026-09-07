@@ -4,7 +4,13 @@ import { Header } from '@/components/sections/Header'
 import { Footer } from '@/components/sections/Footer'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, ArrowDown, Check, FlaskConical, ImageOff } from 'lucide-react'
-import { architecture, demonstrates, benchmark, screenshots } from '@/lib/caseStudy'
+import {
+  architecture,
+  demonstrates,
+  benchmark,
+  screenshots,
+  SHOW_BENCHMARK,
+} from '@/lib/caseStudy'
 
 export const metadata: Metadata = {
   title: 'Production LLM Deployment | Kaironovas Engineering Lab',
@@ -100,69 +106,74 @@ export default function ProductionLLMDeploymentPage() {
           </div>
         </section>
 
-        {/* Benchmark */}
+        {/* Performance testing */}
         <section className="py-20 bg-white dark:bg-[#080a12]">
           <div className="container mx-auto px-6">
-            <div className="flex flex-wrap items-center gap-3 mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Benchmark
-              </h2>
-              <span className="rounded-full border border-amber-300/40 bg-amber-50 dark:border-amber-400/20 dark:bg-amber-400/10 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
-                Measurements pending
-              </span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-2xl">
-              These fields will be populated with real, measured results from the
-              reference deployment. No numbers are estimated or fabricated.
-            </p>
-            <div className="max-w-2xl rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
-              <dl className="divide-y divide-slate-100 dark:divide-white/5">
-                {benchmark.map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center justify-between px-5 py-3.5 font-mono text-sm bg-white dark:bg-white/[0.03]"
-                  >
-                    <dt className="text-slate-500 dark:text-slate-400">{row.label}</dt>
-                    <dd
-                      className={
-                        row.value === 'Coming soon'
-                          ? 'text-slate-400 dark:text-slate-500'
-                          : 'text-slate-900 dark:text-white'
-                      }
-                    >
-                      {row.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            {SHOW_BENCHMARK ? (
+              <>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
+                  Benchmark
+                </h2>
+                <div className="max-w-2xl rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
+                  <dl className="divide-y divide-slate-100 dark:divide-white/5">
+                    {benchmark.map((row) => (
+                      <div
+                        key={row.label}
+                        className="flex items-center justify-between px-5 py-3.5 font-mono text-sm bg-white dark:bg-white/[0.03]"
+                      >
+                        <dt className="text-slate-500 dark:text-slate-400">
+                          {row.label}
+                        </dt>
+                        <dd className="text-slate-900 dark:text-white">{row.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+                  Performance testing
+                </h2>
+                <div className="max-w-2xl rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-white/[0.03] p-6">
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Real serving, latency, throughput, concurrency, and GPU
+                    measurements from the Kaironovas Engineering Lab will be
+                    published with the completed technical case study.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
-        {/* Screenshots */}
+        {/* Deployment Evidence */}
         <section className="py-20 bg-gradient-to-b from-indigo-50/40 to-white dark:from-[#0b0f1e] dark:to-[#080a12]">
           <div className="container mx-auto px-6">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">
-              Screenshots
+              Deployment Evidence
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
-              Real screenshots from the deployment will be added here. Placeholders
-              are shown until the captures are available.
+              Real captures from the Kaironovas Engineering Lab deployment will be
+              added to these slots. Nothing here is simulated.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {screenshots.map((label) => (
-                <div
+                // TODO: Replace this placeholder slot with a real <Image /> capture.
+                <figure
                   key={label}
-                  className="flex aspect-video flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-white/[0.03] text-center"
+                  className="overflow-hidden rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-white/[0.03]"
                 >
-                  <ImageOff className="h-6 w-6 text-slate-300 dark:text-slate-600 mb-3" />
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {label}
-                  </span>
-                  <span className="mt-1 text-xs text-slate-400 dark:text-slate-600">
-                    Screenshot coming soon
-                  </span>
-                </div>
+                  <div className="flex aspect-video flex-col items-center justify-center text-center px-4">
+                    <ImageOff className="h-6 w-6 text-slate-300 dark:text-slate-600 mb-3" />
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                      {label}
+                    </span>
+                    <span className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                      Engineering Lab artifact to be added
+                    </span>
+                  </div>
+                </figure>
               ))}
             </div>
           </div>

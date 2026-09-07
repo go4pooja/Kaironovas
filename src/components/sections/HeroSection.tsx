@@ -94,7 +94,7 @@ export function HeroSection() {
             >
               <Button size="xl" variant="gradient" className="group shadow-indigo-600/20" asChild>
                 <Link href="#contact">
-                  Get an AI Infrastructure Review
+                  Request a Technical Review
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>

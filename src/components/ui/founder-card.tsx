@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Linkedin, Github } from 'lucide-react'
+import { Linkedin, Github, User } from 'lucide-react'
 
 type Founder = {
   name: string
@@ -12,16 +12,6 @@ type Founder = {
   github: string | null
   bio: string
   focusAreas: string[]
-}
-
-function initials(name: string) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
 }
 
 export function FounderCard({ founder }: { founder: Founder }) {
@@ -37,9 +27,14 @@ export function FounderCard({ founder }: { founder: Founder }) {
             className="h-16 w-16 rounded-full object-cover"
           />
         ) : (
-          // TODO: Replace with a real founder photograph.
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-lg font-semibold text-white">
-            {initials(founder.name)}
+          // TODO: Set `founder.photo` to a real local image path (e.g. '/founder.jpg')
+          // once supplied. This is a neutral local placeholder — not an AI portrait.
+          <div
+            className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-white/15 dark:bg-white/5 dark:text-slate-500"
+            title="Founder photo to be added"
+            aria-label="Founder photo placeholder"
+          >
+            <User className="h-7 w-7" />
           </div>
         )}
         <div>

@@ -4,7 +4,16 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Mail, Cloud, ShieldCheck, Send, MessageSquare, ClipboardCheck } from 'lucide-react'
+import {
+  Mail,
+  Cloud,
+  ShieldCheck,
+  Send,
+  MessageSquare,
+  ClipboardCheck,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react'
 
 const initialForm = {
   name: '',
@@ -16,15 +25,40 @@ const initialForm = {
   environment: '',
   timeline: '',
   stack: '',
+  // Honeypot: must stay empty. Bots tend to fill every field.
+  company_url: '',
 }
+
+const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
+type Status = 'idle' | 'submitting' | 'success' | 'error'
+
+const SUCCESS_COPY =
+  "Thanks. We've received your request. We'll review the details and get back to you shortly."
 
 export function ContactSection() {
   const [formData, setFormData] = useState(initialForm)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    if (status === 'submitting') return
+
+    // Client-side validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.building.trim()) {
+      setStatus('error')
+      setErrorMsg('Please fill in your name, work email, and what you want to build.')
+      return
+    }
+    if (!emailRegex.test(formData.email.trim())) {
+      setStatus('error')
+      setErrorMsg('Please enter a valid work email address.')
+      return
+    }
+
+    setStatus('submitting')
+    setErrorMsg('')
 
     try {
       const response = await fetch('/api/contact', {
@@ -35,19 +69,19 @@ export function ContactSection() {
         body: JSON.stringify(formData),
       })
 
-      const result = await response.json()
+      const result = await response.json().catch(() => ({}))
 
       if (response.ok) {
-        alert(result.message || "Thank you! We'll get back to you within 24 hours.")
+        setStatus('success')
         setFormData(initialForm)
       } else {
-        alert(result.error || 'Something went wrong. Please try again.')
+        setStatus('error')
+        setErrorMsg(result.error || 'Something went wrong. Please try again.')
       }
     } catch (error) {
       console.error('Form submission error:', error)
-      alert('Failed to send message. Please check your connection and try again.')
-    } finally {
-      setIsSubmitting(false)
+      setStatus('error')
+      setErrorMsg('Failed to send your request. Please check your connection and try again.')
     }
   }
 
@@ -58,7 +92,13 @@ export function ContactSection() {
       ...prev,
       [e.target.name]: e.target.value,
     }))
+    if (status === 'error') {
+      setStatus('idle')
+      setErrorMsg('')
+    }
   }
+
+  const isSubmitting = status === 'submitting'
 
   const contactInfo = [
     {
@@ -75,9 +115,10 @@ export function ContactSection() {
     },
     {
       icon: ShieldCheck,
-      title: 'Your Data Stays Yours',
+      title: 'Your Data, Your Deployment Choice',
       details: 'Private by design',
-      description: 'No data sent to third-party APIs',
+      description:
+        'Deploy on-prem, in your VPC, or in an architecture designed around your security and data requirements.',
     },
   ]
 
@@ -193,154 +234,201 @@ export function ContactSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className={labelClass}>Name *</label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="Jane Doe"
-                      />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Work Email *</label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="jane@company.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className={labelClass}>Company</label>
-                      <input
-                        type="text"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="Your Company"
-                      />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Company Website</label>
-                      <input
-                        type="text"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="company.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className={labelClass}>What are you trying to build? *</label>
-                    <textarea
-                      name="building"
-                      required
-                      rows={4}
-                      value={formData.building}
-                      onChange={handleChange}
-                      className={`${inputClass} resize-none`}
-                      placeholder="Briefly describe the AI system, data sources, and workflows you have in mind..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className={labelClass}>Main Priority</label>
-                      <select
-                        name="priority"
-                        value={formData.priority}
-                        onChange={handleChange}
-                        className={inputClass}
-                      >
-                        <option value="">Select a priority</option>
-                        <option value="private-ai-assistant">Private AI Assistant</option>
-                        <option value="rag">RAG / Knowledge Search</option>
-                        <option value="llm-deployment">LLM Deployment</option>
-                        <option value="ai-infrastructure">AI Infrastructure</option>
-                        <option value="workflow-automation">Workflow Automation</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className={labelClass}>Where should the system run?</label>
-                      <select
-                        name="environment"
-                        value={formData.environment}
-                        onChange={handleChange}
-                        className={inputClass}
-                      >
-                        <option value="">Select an environment</option>
-                        <option value="public-cloud">Public Cloud</option>
-                        <option value="private-cloud-vpc">Private Cloud / VPC</option>
-                        <option value="on-prem">On-Prem</option>
-                        <option value="not-sure">Not Sure</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className={labelClass}>Timeline</label>
-                      <select
-                        name="timeline"
-                        value={formData.timeline}
-                        onChange={handleChange}
-                        className={inputClass}
-                      >
-                        <option value="">Select a timeline</option>
-                        <option value="exploring">Exploring</option>
-                        <option value="lt-1-month">Less than 1 month</option>
-                        <option value="1-3-months">1–3 months</option>
-                        <option value="3-plus-months">3+ months</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className={labelClass}>
-                        Current AI stack{' '}
-                        <span className="text-gray-400 dark:text-slate-500 font-normal">
-                          (optional)
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        name="stack"
-                        value={formData.stack}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="e.g. vLLM, Kubernetes, pgvector"
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="xl"
-                    variant="gradient"
-                    disabled={isSubmitting}
-                    className="w-full group"
+                {status === 'success' ? (
+                  <div
+                    role="status"
+                    className="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-6 py-14 text-center dark:border-emerald-400/20 dark:bg-emerald-400/10"
                   >
-                    {isSubmitting ? 'Sending...' : 'Request Technical Review'}
-                    {!isSubmitting && (
-                      <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <CheckCircle2 className="h-10 w-10 text-emerald-600 dark:text-emerald-400 mb-4" />
+                    <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Request received
+                    </p>
+                    <p className="max-w-md text-gray-600 dark:text-slate-300">
+                      {SUCCESS_COPY}
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-6 dark:border-white/15 dark:bg-transparent dark:text-slate-200 dark:hover:bg-white/5"
+                      onClick={() => setStatus('idle')}
+                    >
+                      Submit another request
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                    {/* Honeypot field — hidden from users, ignored by real submissions */}
+                    <div className="hidden" aria-hidden="true">
+                      <label htmlFor="company_url">Company URL</label>
+                      <input
+                        id="company_url"
+                        type="text"
+                        name="company_url"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={formData.company_url}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className={labelClass}>Name *</label>
+                        <input
+                          type="text"
+                          name="name"
+                          required
+                          value={formData.name}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="Jane Doe"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelClass}>Work Email *</label>
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          value={formData.email}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="jane@company.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className={labelClass}>Company</label>
+                        <input
+                          type="text"
+                          name="company"
+                          value={formData.company}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="Your Company"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelClass}>Company Website</label>
+                        <input
+                          type="text"
+                          name="website"
+                          value={formData.website}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="company.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={labelClass}>What are you trying to build? *</label>
+                      <textarea
+                        name="building"
+                        required
+                        rows={4}
+                        value={formData.building}
+                        onChange={handleChange}
+                        className={`${inputClass} resize-none`}
+                        placeholder="Briefly describe the AI system, data sources, and workflows you have in mind..."
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className={labelClass}>Main Priority</label>
+                        <select
+                          name="priority"
+                          value={formData.priority}
+                          onChange={handleChange}
+                          className={inputClass}
+                        >
+                          <option value="">Select a priority</option>
+                          <option value="private-ai-assistant">Private AI Assistant</option>
+                          <option value="rag">RAG / Knowledge Search</option>
+                          <option value="llm-deployment">LLM Deployment</option>
+                          <option value="ai-infrastructure">AI Infrastructure</option>
+                          <option value="workflow-automation">Workflow Automation</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={labelClass}>Where should the system run?</label>
+                        <select
+                          name="environment"
+                          value={formData.environment}
+                          onChange={handleChange}
+                          className={inputClass}
+                        >
+                          <option value="">Select an environment</option>
+                          <option value="public-cloud">Public Cloud</option>
+                          <option value="private-cloud-vpc">Private Cloud / VPC</option>
+                          <option value="on-prem">On-Prem</option>
+                          <option value="not-sure">Not Sure</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className={labelClass}>Timeline</label>
+                        <select
+                          name="timeline"
+                          value={formData.timeline}
+                          onChange={handleChange}
+                          className={inputClass}
+                        >
+                          <option value="">Select a timeline</option>
+                          <option value="exploring">Exploring</option>
+                          <option value="lt-1-month">Less than 1 month</option>
+                          <option value="1-3-months">1–3 months</option>
+                          <option value="3-plus-months">3+ months</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={labelClass}>
+                          Current AI stack{' '}
+                          <span className="text-gray-400 dark:text-slate-500 font-normal">
+                            (optional)
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          name="stack"
+                          value={formData.stack}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="e.g. vLLM, Kubernetes, pgvector"
+                        />
+                      </div>
+                    </div>
+
+                    {status === 'error' && (
+                      <div
+                        role="alert"
+                        className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-400/10 dark:text-red-300"
+                      >
+                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <span>{errorMsg}</span>
+                      </div>
                     )}
-                  </Button>
-                </form>
+
+                    <Button
+                      type="submit"
+                      size="xl"
+                      variant="gradient"
+                      disabled={isSubmitting}
+                      aria-busy={isSubmitting}
+                      className="w-full group"
+                    >
+                      {isSubmitting ? 'Sending…' : 'Request Technical Review'}
+                      {!isSubmitting && (
+                        <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      )}
+                    </Button>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </motion.div>
